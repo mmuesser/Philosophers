@@ -2,7 +2,7 @@ NAME = philo
 
 SRCS = philo.c parsing.c utils.c
 
-OBJS = ${SRCS=:.c=.o}
+OBJS = ${SRCS:.c=.o}
 
 INCLUDE = -I ./include/
 
@@ -15,7 +15,7 @@ RM = rm -rf
 .c.o:
 		${CC} ${CFLAGS} ${INCLUDE} -c $< -o ${<:.c=.o}
 
-${NAME}: ${OBJS}
+${NAME}: 	${OBJS}
 			${CC} ${CFLAGS} ${INCLUDE} ${OBJS} -lpthread -o ${NAME}
 
 all:	${NAME}

@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 15:28:41 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/02 16:28:11 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/13 09:35:00 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	error(int c)
 
 int	nb_of_arg(int ac)
 {
-	if (ac < 5 && ac > 6)
+	if (ac < 5 || ac > 6)
 	{
 		printf("Error\nNot enough/to many arguments\n");
 		return (1);
