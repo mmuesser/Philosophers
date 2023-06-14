@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 10:27:21 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/14 18:01:36 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/14 18:03:18 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,11 @@ t_philo	*eat(t_philo *philo)
 	pthread_mutex_lock(&philo->mutex_fork_left);
 	if (check_death(philo, 1) == 1)
 		return (NULL);
-	printf()
+	//printf()
 	pthread_mutex_lock(&philo->mutex_fork_right);
 	if (check_death(philo, 1) == 1)
 		return (NULL);
-	printf()
+	//printf()
 	philo->time_die = time_passed(philo->time);
 	if (check_death(philo, 1) == 1)
 		return (NULL);
@@ -65,8 +65,9 @@ void	*ma_routine(void *philo)
 		|| (philo->nb_must_eat != -1 && check_nb_eat() == 1))
 	{
 		if (philo = eat(philo) == NULL)
-			return (NULL);
-		philo = sleep(philo);
+			break ;
+		if (philo = sleep(philo) == NULL)
+			break ;
 	}
 	pthread_exit(EXIT_SUCCESS);
 }
