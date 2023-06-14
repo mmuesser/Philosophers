@@ -6,79 +6,65 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 14:22:37 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/13 11:57:29 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/14 11:11:24 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*idee routine :
-	boucler pour checker l'etat du philo
-	si son action est finie, voir si une action spe vient derriere
-	si oui la faire si possible
-	si non checker diff entre time_to_die et time_die
-	si diff inf a time_to_eat et que fork droite et gauche dispo : manger
-	
-	
-	differents cas possible :
-		2 fourchettes dispo et diff time_to_die time_die inf time_to_eat -> manger/next
-		2 fourchettes dispo et diff time_to_die time_die supp time_to_eat -> next/manger
-		1 fourchette pas dispo et diff time_to_die time_die inf time_to_eat -> ??
-		1 fourchette pas dispo et diff time_to_die time_die supp time_to_eat -> next
-		2 fourchettes pas dispo et diff time_to_die time_die inf time_to_eat -> ??
-		2 fourchettes pas dispo et diff time_to_die time_die supp time_to_eat -> next
-		*/
-
 #include "include/philo.h"
 
-t_philo	*set_ptr(char **av)
+t_philo	*set_philo(char **av)
 {
-	t_philo	*ptr;
+	t_philo	*philo;
 	int		i;
 
-	ptr = malloc(sizeof(t_philo) * ft_atoi(av[1]));
-	if (!ptr)
+	philo = malloc(sizeof(t_philo) * ft_atoi(av[1]));
+	if (!philo)
 	{
-		printf("Error create ptr\n");
+		printf("Error create philo\n");
 		return (NULL);
 	}
 	i = 0;
 	while (i < ft_atoi(av[1]))
 	{
-		ptr[i].time_die = 0;
-		ptr[i].time_eat = 0;
-		ptr[i].time_sleep = 0;
-		ptr[i].nb_eat = 0;
-		ptr[i].nb_fork = 0;
+		philo[i].num_philo = i + 1;
+		philo[i].time_die = 0;
+		philo[i].time_eat = 0;
+		philo[i].time_sleep = 0;
+		philo[i].nb_eat = 0;
+		philo[i].nb_fork = 0;
 		i++;
 	}
-	return (ptr);
+	return (philo);
 }
-pthread_mutex_t	*set_fork(char **av)
-{
-	pthread_mutex_t	*fork;
-	int	i;
 
-	fork = malloc(sizeof(pthread_mutex_t) * ft_atoi(av[1]));
-	if (!fork)
+pthread_mutex_t	*set_mutex_fork(char **av)
+{
+	pthread_mutex_t	*mutex_fork;
+	int				i;
+
+	mutex_fork = malloc(sizeof(pthread_mutex_t) * ft_atoi(av[1]));
+	if (!mutex_fork)
 	{
-		printf("Error create fork\n");
+		printf("Error create mutex_fork\n");
 		return (NULL);
 	}
 	i = 0;
 	while (i < ft_atoi(av[1]))
 	{
-		pthread_mutex_init(&fork[i], NULL);
+		pthread_mutex_init(&mutex_fork[i], NULL);
 		i++;
 	}
-	return (fork);
+	return (mutex_fork);
 }
 
 t_data	*set_data(int ac, char **av)
 {
-	t_data *data;
+	t_data	*data;
 
 	data = malloc(sizeof(t_data));
 	if (!data)
 		return (NULL);
+	data->nb_philo = ft_atoi(av[1]);
 	data->time_to_die = ft_atoi(av[2]);
 	data->time_to_eat = ft_atoi(av[3]);
 	data->time_to_sleep = ft_atoi(av[4]);
@@ -86,23 +72,13 @@ t_data	*set_data(int ac, char **av)
 		data->nb_must_eat = ft_atoi(av[5]);
 	else
 		data->nb_must_eat = -1;
-	data->ptr = set_ptr(av);
-	if (!data->ptr)
+	data->philo = set_philo(av);
+	if (!data->philo)
 		return (NULL);
-	data->fork = set_fork(av);
+	data->mutex_fork = set_mutex_fork(av);
 	return (data);
 }
 
-void	*ma_routine(void *data)
-{
-	int *i;
-
-	while (data->nb_must_eat == -1 || (data->nb_must_eat != -1 && check_nb_eat() == 1))
-	{
-		
-	}
-	pthread_exit(EXIT_SUCCESS);
-}
 void	wait_thread(t_data *data, int nb)
 {
 	int	i;
@@ -110,7 +86,7 @@ void	wait_thread(t_data *data, int nb)
 	i = 0;
 	while (i < nb)
 	{
-		pthread_join(data->ptr[i].thread, NULL);
+		pthread_join(data->philo[i].thread, NULL);
 		i++;
 	}
 }
@@ -126,7 +102,7 @@ int	main(int ac, char **av)
 	i = 0;
 	while (i < ft_atoi(av[1]))
 	{
-		if (pthread_create(&data->ptr[i].thread, NULL, ma_routine, data) != 0)
+		if (pthread_create(&data->philo[i].thread, NULL, ma_routine, data) != 0)
 		{
 			printf("Error creation thread\n");
 			return (1);
@@ -134,8 +110,8 @@ int	main(int ac, char **av)
 		i++;
 	}
 	wait_thread(data, ft_atoi(av[1]));
-	free(data->ptr);
-	free(data->fork);
+	free(data->philo);
+	free(data->mutex_fork);
 	free(data);
 	return (0);
 }

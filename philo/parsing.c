@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 15:28:41 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/13 09:35:00 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/14 10:26:59 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	error(int c)
 	if (c == 4)
 		printf("Error time_to_sleep\n");
 	if (c == 5)
-		printf("Error nb_of_times_each_philo_must_eat\n");		
+		printf("Error nb_of_times_each_philo_must_eat\n");
 	return (1);
 }
 
