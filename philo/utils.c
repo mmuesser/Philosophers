@@ -6,19 +6,20 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 15:32:40 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/14 10:54:14 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/14 16:43:10 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "include/philo.h"
 
-float time_diff(struct timeval *start, struct timeval *end)
+long long	time_passed(long long time)
 {
-	float	result;
+	struct timeval	now;
+	long long		i;
 
-	result = (end->tv_sec - start->tv_sec)
-		+ 1e-6*(end->tv_usec - start->tv_usec);
-    return (result);
+	gettimeofday(&now, NULL);
+	i = (now.tv_sec * 1000 + now.tv_usec / 1000) - time;
+	return (i);
 }
 
 int	ft_strlen(char *str)
