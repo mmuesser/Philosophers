@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 14:37:48 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/14 17:57:21 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/15 16:56:13 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,39 +19,49 @@
 # include <sys/time.h>
 # include <unistd.h>
 
-/*changer nom time_die*/
+/*changer nom time_last_meal*/
 
 typedef struct s_philo
 {
-	int				dead;
+	int				*dead;
 	long long		time;
 	int				num_philo;
-	long long		time_die;
+	long long		time_last_meal;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_eat;
 	int				nb_must_eat;
-	pthread_mutex_t	mutex_dead;
-	pthread_mutex_t	mutex_fork_right;
-	pthread_mutex_t mutex_fork_left;
+	pthread_mutex_t	*mutex_printf;
+	pthread_mutex_t	*mutex_dead;
+	pthread_mutex_t	*mutex_fork_right;
+	pthread_mutex_t	*mutex_fork_left;
 	pthread_t		thread;
 }	t_philo;
 
 typedef struct s_data
 {
+	int				dead;
+	int				nb_philo;
 	long long		time;
-	t_philo			*philo;
+	pthread_mutex_t	mutex_printf;
+	pthread_mutex_t	mutex_dead;
 	pthread_mutex_t	*mutex_fork;
+	t_philo			*philo;
 }	t_data;
 
 int			nb_of_arg(int ac);
 int			parsing(int ac, char **av);
 
+void		print(t_philo *philo, int i);
+void		wait_thread(t_data *data, int nb);
 long long	time_passed(long long time);
 int			ft_strlen(char *str);
 int			ft_atoi(char *str);
 
+int			check_death(t_philo *philo);
 void		*ma_routine(void *data);
+
+t_philo		*set_philo(int ac, char **av, t_data *data);
 
 #endif

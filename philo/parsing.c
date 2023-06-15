@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 15:28:41 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/14 10:26:59 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/15 17:36:05 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ int	parsing(int ac, char **av)
 		return (1);
 	if (check_nb(av[1]) == 1)
 		return (error(1));
+	if (ft_atoi(av[1]) == 0)
+		return (1);
 	if (check_nb(av[2]) == 1)
 		return (error(2));
 	if (check_nb(av[3]) == 1)

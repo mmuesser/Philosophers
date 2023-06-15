@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 10:27:21 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/14 18:03:18 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/15 17:37:29 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,60 +14,80 @@
 
 #include "include/philo.h"
 
-int	check_death(t_philo *philo, int i)
+int	check_death(t_philo *philo)
 {
-	if (philo->dead == 1)
+	pthread_mutex_lock(philo->mutex_dead);
+	if (*philo->dead != 0)
+	{
+		pthread_mutex_unlock(philo->mutex_dead);
 		return (1);
-	if (i == 1)
-	{
-		if (time_passed(philo->time) - philo->time_die >= philo->time_to_die)
-			return (1);
 	}
-	else if (i == 2)
-	{
-		if (time_passed(philo->time) - philo->time_to_sleep >= philo->time_to_die)
-			return (1);
-	}
+	pthread_mutex_unlock(philo->mutex_dead);
 	return (0);
 }
 
-t_philo	*eat(t_philo *philo)
+int	eating(t_philo **philo)
 {
-	pthread_mutex_lock(&philo->mutex_fork_left);
-	if (check_death(philo, 1) == 1)
-		return (NULL);
-	//printf()
-	pthread_mutex_lock(&philo->mutex_fork_right);
-	if (check_death(philo, 1) == 1)
-		return (NULL);
-	//printf()
-	philo->time_die = time_passed(philo->time);
-	if (check_death(philo, 1) == 1)
-		return (NULL);
-	usleep(philo->time_to_eat * 1000);
-	pthread_mutex_unlock(&philo->mutex_fork_left);
-	pthread_mutex_unlock(&philo->mutex_fork_right);
-	return (philo);
+	pthread_mutex_lock((*philo)->mutex_fork_left);
+	if (check_death(*philo) == 1)
+		return (1);
+	print((*philo), 0);
+	pthread_mutex_lock((*philo)->mutex_fork_right);
+	if (check_death(*philo) == 1)
+		return (1);
+	print((*philo), 0);
+	(*philo)->time_last_meal = time_passed((*philo)->time);
+	(*philo)->nb_eat += 1;
+	if (check_death(*philo) == 1)
+		return (1);
+	print((*philo), 1);
+	if ((*philo)->time_to_eat > (*philo)->time_to_die)
+		usleep((*philo)->time_to_die * 1000);
+	else
+		usleep((*philo)->time_to_eat * 1000);
+	pthread_mutex_unlock((*philo)->mutex_fork_left);
+	pthread_mutex_unlock((*philo)->mutex_fork_right);
+	return (0);
 }
 
-t_philo	*sleep(t_philo *philo)
+int	sleeping(t_philo *philo)
 {
-	if (check_death(philo, 2) == 1)
-		return (NULL);
-	usleep(philo->time_to_sleep * 1000);
-	return (philo);
+	if (check_death(philo) == 1)
+		return (1);
+	print(philo, 2);
+	if (philo->time_to_eat + philo->time_to_sleep > philo->time_to_die)
+		usleep((philo->time_to_die - philo->time_to_eat) * 1000);
+	else
+		usleep(philo->time_to_sleep * 1000);
+	return (0);
 }
 
-void	*ma_routine(void *philo)
+int	thinking(t_philo *philo)
 {
-	
-	while (philo->nb_must_eat == -1
-		|| (philo->nb_must_eat != -1 && check_nb_eat() == 1))
+	if (check_death(philo) == 1)
+		return (1);
+	print(philo, 3);
+	usleep(((philo->time_to_die - (philo->time_to_eat \
+	+ philo->time_to_sleep)) / 2) * 1000);
+	return (0);
+}
+
+void	*ma_routine(void *arg)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *) arg;
+	if (philo->num_philo % 2 == 0)
+		usleep(500);
+	while (1 && philo->nb_must_eat != 0)
 	{
-		if (philo = eat(philo) == NULL)
+		if (eating(&philo) == 1)
 			break ;
-		if (philo = sleep(philo) == NULL)
+		if (sleeping(philo) == 1)
+			break ;
+		if (thinking(philo) == 1)
 			break ;
 	}
-	pthread_exit(EXIT_SUCCESS);
+	printf("----- philo [%d] sort de la routine -----\n", philo->num_philo);
+	return (NULL);
 }
