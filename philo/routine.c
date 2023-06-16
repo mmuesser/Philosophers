@@ -6,11 +6,9 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 10:27:21 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/16 10:58:49 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/16 15:42:35 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-/*si philo pas proche de mourir -> think, sinon -> eat*/
 
 #include "include/philo.h"
 
@@ -43,8 +41,12 @@ int	eating(t_philo **philo)
 		return (1);
 	}
 	print((*philo), 0);
-	(*philo)->time_last_meal = time_passed((*philo)->time);
+	pthread_mutex_lock(&(*philo)->mutex_time_last_eat);
+	(*philo)->time_last_eat = time_passed((*philo)->time);
+	pthread_mutex_unlock(&(*philo)->mutex_time_last_eat);
+	pthread_mutex_lock(&(*philo)->mutex_nb_eat);
 	(*philo)->nb_eat += 1;
+	pthread_mutex_unlock(&(*philo)->mutex_nb_eat);
 	if (check_death(*philo) == 1)
 	{
 		pthread_mutex_unlock((*philo)->mutex_fork_left);
@@ -83,7 +85,7 @@ int	thinking(t_philo *philo)
 	return (0);
 }
 
-void	*ma_routine(void *arg)
+void	*routine_multiple_philo(void *arg)
 {
 	t_philo	*philo;
 
@@ -99,7 +101,9 @@ void	*ma_routine(void *arg)
 		if (thinking(philo) == 1)
 			break ;
 	}
+	pthread_mutex_lock(philo->mutex_printf);
 	printf("----- philo [%d] sort de la routine -----\n", philo->num_philo);
+	pthread_mutex_unlock(philo->mutex_printf);
 	return (NULL);
 }
 

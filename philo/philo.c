@@ -6,52 +6,11 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 14:22:37 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/16 10:58:15 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/16 14:42:15 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "include/philo.h"
-
-pthread_mutex_t	*set_mutex_fork(int nb)
-{
-	pthread_mutex_t	*mutex_fork;
-	int				i;
-
-	mutex_fork = malloc(sizeof(pthread_mutex_t) * nb);
-	if (!mutex_fork)
-	{
-		printf("Error create mutex_fork\n");
-		return (NULL);
-	}
-	i = 0;
-	while (i < nb)
-	{
-		pthread_mutex_init(&mutex_fork[i], NULL);
-		i++;
-	}
-	return (mutex_fork);
-}
-
-t_data	*set_data(int ac, char **av)
-{
-	t_data	*data;
-
-	data = malloc(sizeof(t_data));
-	if (!data)
-		return (NULL);
-	data->dead = 0;
-	data->nb_philo = ft_atoi(av[1]);
-	data->time = time_passed(0);
-	pthread_mutex_init(&data->mutex_printf, NULL);
-	pthread_mutex_init(&data->mutex_dead, NULL);
-	data->mutex_fork = set_mutex_fork(ft_atoi(av[1]));
-	if (!data->mutex_fork)
-		return (NULL);
-	data->philo = set_philo(ac, av, data);
-	if (!data->philo)
-		return (NULL);
-	return (data);
-}
 
 int	check_nb_eat(t_data *data)
 {
@@ -60,9 +19,14 @@ int	check_nb_eat(t_data *data)
 	i = 0;
 	while (i < data->nb_philo)
 	{
+		pthread_mutex_lock(&data->philo[i].mutex_nb_eat);
 		if ((data->philo[i].nb_eat < data->philo[i].nb_must_eat)
 			|| data->philo[i].nb_must_eat == -1)
+		{
+			pthread_mutex_unlock(&data->philo[i].mutex_nb_eat);
 			return (0);
+		}
+		pthread_mutex_unlock(&data->philo[i].mutex_nb_eat);
 		i++;
 	}
 	return (1);
@@ -79,60 +43,67 @@ void	check_dead(t_data *data)
 		i = -1;
 		while (++i < data->nb_philo)
 		{
-			if (time_passed(data->time) - data->philo[i].time_last_meal
+			pthread_mutex_lock(&data->philo[i].mutex_time_last_eat);
+			if (time_passed(data->time) - data->philo[i].time_last_eat
 				>= data->philo[i].time_to_die)
 			{
+				pthread_mutex_unlock(&data->philo[i].mutex_time_last_eat);
 				pthread_mutex_lock(&data->mutex_dead);
 				data->dead = 1;
 				print(&data->philo[i], 4);
 				pthread_mutex_unlock(&data->mutex_dead);
 				usleep(((time_passed(data->time)
-							- data->philo[i].time_last_meal)
+							- data->philo[i].time_last_eat)
 						- data->philo[i].time_to_die) * 1000);
 				return ;
 			}
+			pthread_mutex_unlock(&data->philo[i].mutex_time_last_eat);
 		}
 		if (check_nb_eat(data) == 1)
 		{
+			pthread_mutex_lock(&data->mutex_dead);
 			data->dead = 1;
+			pthread_mutex_unlock(&data->mutex_dead);
 			return ;
 		}
-		usleep(50);
+		usleep(500);
 	}
 }
 
 int	one_philo(t_data *data)
 {
-	data->philo->time = data->time;
+	data->philo[0].time = data->time;
 	if (pthread_create(&data->philo[0].thread,
 			NULL, routine_one_philo, &data->philo[0]) != 0)
 	{
 		printf("Error creation thread\n");
+		free_all(data);
 		return (1);
 	}
 	return (0);
 }
 
-int	multiples_philo(t_data *data, int nb_philo)
+int	multiple_philo(t_data *data)
 {
 	int	i;
 
+	i = -1;
+	while (++i < data->nb_philo)
+		data->philo[i].time = data->time;
 	i = 0;
-	while (i < nb_philo)
+	while (i < data->nb_philo)
 	{
-		data->philo->time = data->time;
 		if (pthread_create(&data->philo[i].thread,
-				NULL, ma_routine, &data->philo[i]) != 0)
+				NULL, routine_multiple_philo, &data->philo[i]) != 0)
 		{
 			printf("Error creation thread\n");
+			free_all(data);
 			return (1);
 		}
 		i++;
 	}
 	return (0);
 }
-
-/*A clean*/
 
 int	main(int ac, char **av)
 {
@@ -150,14 +121,10 @@ int	main(int ac, char **av)
 			return (1);
 	}
 	else
-	{
-		if (multiples_philo(data, ft_atoi(av[1])) == 1)
+		if (multiple_philo(data) == 1)
 			return (1);
-	}
 	check_dead(data);
 	wait_thread(data, ft_atoi(av[1]));
-	free(data->philo);
-	free(data->mutex_fork);
-	free(data);
+	free_all(data);
 	return (0);
 }
