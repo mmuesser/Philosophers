@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 14:37:48 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/15 16:56:13 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/16 10:56:46 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ int			ft_atoi(char *str);
 
 int			check_death(t_philo *philo);
 void		*ma_routine(void *data);
+void	*routine_one_philo(void *arg);
 
 t_philo		*set_philo(int ac, char **av, t_data *data);
 

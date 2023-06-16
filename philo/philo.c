@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 14:22:37 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/15 17:48:58 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/16 10:58:15 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,22 +101,24 @@ void	check_dead(t_data *data)
 	}
 }
 
-/*A clean*/
-
-int	main(int ac, char **av)
+int	one_philo(t_data *data)
 {
-	struct timeval	time;
-	t_data			*data;
-	int				i;
-
-	if (parsing(ac, av) == 1)
+	data->philo->time = data->time;
+	if (pthread_create(&data->philo[0].thread,
+			NULL, routine_one_philo, &data->philo[0]) != 0)
+	{
+		printf("Error creation thread\n");
 		return (1);
-	data = set_data(ac, av);
+	}
+	return (0);
+}
+
+int	multiples_philo(t_data *data, int nb_philo)
+{
+	int	i;
+
 	i = 0;
-	gettimeofday(&time, NULL);
-	data->time = time.tv_sec * 1000 + time.tv_usec / 1000;
-	/*faire cas pour 1 philo*/
-	while (i < ft_atoi(av[1]))
+	while (i < nb_philo)
 	{
 		data->philo->time = data->time;
 		if (pthread_create(&data->philo[i].thread,
@@ -126,6 +128,31 @@ int	main(int ac, char **av)
 			return (1);
 		}
 		i++;
+	}
+	return (0);
+}
+
+/*A clean*/
+
+int	main(int ac, char **av)
+{
+	struct timeval	time;
+	t_data			*data;
+
+	if (parsing(ac, av) == 1)
+		return (1);
+	data = set_data(ac, av);
+	gettimeofday(&time, NULL);
+	data->time = time.tv_sec * 1000 + time.tv_usec / 1000;
+	if (ft_atoi(av[1]) == 1)
+	{
+		if (one_philo(data) == 1)
+			return (1);
+	}
+	else
+	{
+		if (multiples_philo(data, ft_atoi(av[1])) == 1)
+			return (1);
 	}
 	check_dead(data);
 	wait_thread(data, ft_atoi(av[1]));
