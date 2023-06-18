@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 15:28:41 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/15 17:36:05 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/18 13:42:50 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,15 @@
 int	error(int c)
 {
 	if (c == 1)
-		printf("Error nb_of_philo\n");
+		printf("Error: nb_of_philo\n");
 	if (c == 2)
-		printf("Error time_to_die\n");
+		printf("Error: time_to_die\n");
 	if (c == 3)
-		printf("Error time_to_eat\n");
+		printf("Error: time_to_eat\n");
 	if (c == 4)
-		printf("Error time_to_sleep\n");
+		printf("Error: time_to_sleep\n");
 	if (c == 5)
-		printf("Error nb_of_times_each_philo_must_eat\n");
+		printf("Error: nb_of_times_each_philo_must_eat\n");
 	return (1);
 }
 
@@ -31,7 +31,7 @@ int	nb_of_arg(int ac)
 {
 	if (ac < 5 || ac > 6)
 	{
-		printf("Error\nNot enough/to many arguments\n");
+		printf("Error: Not enough/to many arguments\n");
 		return (1);
 	}
 	return (0);

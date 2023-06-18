@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 14:37:48 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/16 14:42:15 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/18 13:16:22 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,16 @@ long long		time_passed(long long time);
 int				ft_strlen(char *str);
 int				ft_atoi(char *str);
 
-int				check_death(t_philo *philo);
+int				check_is_dead(t_philo *philo);
 void			*routine_multiple_philo(void *data);
 void			*routine_one_philo(void *arg);
 
 t_philo			*set_philo(int ac, char **av, t_data *data);
-pthread_mutex_t	*set_mutex_fork(int nb);
+pthread_mutex_t	*set_mutex_fork(t_data *data);
 t_data			*set_data(int ac, char **av);
 
 void			free_all(t_data *data);
+
+void			check_philo(t_data *data);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 15:32:40 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/16 15:34:56 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/18 10:29:47 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,19 @@ void	print(t_philo *philo, int i)
 {
 	pthread_mutex_lock(philo->mutex_printf);
 	if (i == 0)
-		printf ("%lld %d has taken a fork\n", \
+		printf ("[%lld] %d has taken a fork\n", \
 		time_passed(philo->time), philo->num_philo);
 	else if (i == 1)
-		printf("%lld %d is eating\n", \
+		printf("[%lld] %d is eating\n", \
 		time_passed(philo->time), philo->num_philo);
 	else if (i == 2)
-		printf("%lld %d is sleeping\n", \
+		printf("[%lld] %d is sleeping\n", \
 		time_passed(philo->time), philo->num_philo);
 	else if (i == 3)
-		printf("%lld %d is thinking\n", \
+		printf("[%lld] %d is thinking\n", \
 		time_passed(philo->time), philo->num_philo);
 	else if (i == 4)
-		printf("%lld %d died\n", \
+		printf("[%lld] %d died\n", \
 		time_passed(philo->time), philo->num_philo);
 	pthread_mutex_unlock(philo->mutex_printf);
 }

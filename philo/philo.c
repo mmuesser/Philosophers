@@ -6,68 +6,22 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 14:22:37 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/16 14:42:15 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/18 13:40:23 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "include/philo.h"
 
-int	check_nb_eat(t_data *data)
+void	*routine_one_philo(void *arg)
 {
-	int	i;
+	t_philo	*philo;
 
-	i = 0;
-	while (i < data->nb_philo)
-	{
-		pthread_mutex_lock(&data->philo[i].mutex_nb_eat);
-		if ((data->philo[i].nb_eat < data->philo[i].nb_must_eat)
-			|| data->philo[i].nb_must_eat == -1)
-		{
-			pthread_mutex_unlock(&data->philo[i].mutex_nb_eat);
-			return (0);
-		}
-		pthread_mutex_unlock(&data->philo[i].mutex_nb_eat);
-		i++;
-	}
-	return (1);
-}
-
-/*A clean*/
-
-void	check_dead(t_data *data)
-{
-	int	i;
-
-	while (1)
-	{
-		i = -1;
-		while (++i < data->nb_philo)
-		{
-			pthread_mutex_lock(&data->philo[i].mutex_time_last_eat);
-			if (time_passed(data->time) - data->philo[i].time_last_eat
-				>= data->philo[i].time_to_die)
-			{
-				pthread_mutex_unlock(&data->philo[i].mutex_time_last_eat);
-				pthread_mutex_lock(&data->mutex_dead);
-				data->dead = 1;
-				print(&data->philo[i], 4);
-				pthread_mutex_unlock(&data->mutex_dead);
-				usleep(((time_passed(data->time)
-							- data->philo[i].time_last_eat)
-						- data->philo[i].time_to_die) * 1000);
-				return ;
-			}
-			pthread_mutex_unlock(&data->philo[i].mutex_time_last_eat);
-		}
-		if (check_nb_eat(data) == 1)
-		{
-			pthread_mutex_lock(&data->mutex_dead);
-			data->dead = 1;
-			pthread_mutex_unlock(&data->mutex_dead);
-			return ;
-		}
-		usleep(500);
-	}
+	philo = (t_philo *) arg;
+	pthread_mutex_lock(philo->mutex_fork_left);
+	print(philo, 0);
+	usleep(philo->time_to_die * 1000);
+	pthread_mutex_unlock(philo->mutex_fork_left);
+	return (NULL);
 }
 
 int	one_philo(t_data *data)
@@ -96,7 +50,9 @@ int	multiple_philo(t_data *data)
 		if (pthread_create(&data->philo[i].thread,
 				NULL, routine_multiple_philo, &data->philo[i]) != 0)
 		{
+			pthread_mutex_lock(&data->mutex_printf);
 			printf("Error creation thread\n");
+			pthread_mutex_unlock(&data->mutex_printf);
 			free_all(data);
 			return (1);
 		}
@@ -123,7 +79,7 @@ int	main(int ac, char **av)
 	else
 		if (multiple_philo(data) == 1)
 			return (1);
-	check_dead(data);
+	check_philo(data);
 	wait_thread(data, ft_atoi(av[1]));
 	free_all(data);
 	return (0);

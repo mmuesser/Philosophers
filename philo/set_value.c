@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 16:11:01 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/16 14:44:44 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/18 12:15:20 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ t_philo	*set_philo(int ac, char **av, t_data *data)
 	if (!philo)
 	{
 		printf("Error create philo\n");
+		free_all(data);
 		return (NULL);
 	}
 	philo = set_value_philo(philo, ac, av);
@@ -72,19 +73,20 @@ t_philo	*set_philo(int ac, char **av, t_data *data)
 	return (philo);
 }
 
-pthread_mutex_t	*set_mutex_fork(int nb)
+pthread_mutex_t	*set_mutex_fork(t_data *data)
 {
 	pthread_mutex_t	*mutex_fork;
 	int				i;
 
-	mutex_fork = malloc(sizeof(pthread_mutex_t) * nb);
+	mutex_fork = malloc(sizeof(pthread_mutex_t) * data->nb_philo);
 	if (!mutex_fork)
 	{
 		printf("Error create mutex_fork\n");
+		free_all(data);
 		return (NULL);
 	}
 	i = 0;
-	while (i < nb)
+	while (i < data->nb_philo)
 	{
 		pthread_mutex_init(&mutex_fork[i], NULL);
 		i++;
@@ -104,7 +106,7 @@ t_data	*set_data(int ac, char **av)
 	data->time = time_passed(0);
 	pthread_mutex_init(&data->mutex_printf, NULL);
 	pthread_mutex_init(&data->mutex_dead, NULL);
-	data->mutex_fork = set_mutex_fork(data->nb_philo);
+	data->mutex_fork = set_mutex_fork(data);
 	if (!data->mutex_fork)
 		return (NULL);
 	data->philo = set_philo(ac, av, data);
