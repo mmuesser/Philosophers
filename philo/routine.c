@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 10:27:21 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/18 13:39:07 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/19 11:45:34 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,13 @@ int	thinking(t_philo *philo)
 	if (check_is_dead(philo) == 1)
 		return (1);
 	print(philo, 3);
-	usleep(((philo->time_to_die - (philo->time_to_eat \
-	+ philo->time_to_sleep)) / 2) * 1000);
+	if (philo->time_to_eat > philo->time_to_die)
+		usleep(philo->time_to_die * 1000);
+	else if (philo->time_to_sleep > philo->time_to_die)
+		usleep((philo->time_to_die - philo->time_to_eat) * 1000);
+	else
+		usleep(((philo->time_to_die - (philo->time_to_eat \
+		+ philo->time_to_sleep)) / 2) * 1000);
 	return (0);
 }
 

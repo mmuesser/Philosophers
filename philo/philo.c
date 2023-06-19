@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 14:22:37 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/18 13:40:23 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/19 11:00:23 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,11 @@ void	*routine_one_philo(void *arg)
 
 	philo = (t_philo *) arg;
 	pthread_mutex_lock(philo->mutex_fork_left);
+	if (check_is_dead(philo) == 1)
+	{
+		pthread_mutex_unlock(philo->mutex_fork_left);
+		return (NULL);
+	}
 	print(philo, 0);
 	usleep(philo->time_to_die * 1000);
 	pthread_mutex_unlock(philo->mutex_fork_left);

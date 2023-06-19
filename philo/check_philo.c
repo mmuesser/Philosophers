@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 13:08:07 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/18 13:15:03 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/19 11:21:45 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,11 @@ int	check_time_death(t_data *data, int i)
 		data->dead = 1;
 		print(&data->philo[i], 4);
 		pthread_mutex_unlock(&data->mutex_dead);
+		pthread_mutex_lock(&data->philo[i].mutex_time_last_eat);
 		usleep(((time_passed(data->time)
 					- data->philo[i].time_last_eat)
 				- data->philo[i].time_to_die) * 1000);
+		pthread_mutex_unlock(&data->philo[i].mutex_time_last_eat);
 		return (1);
 	}
 	pthread_mutex_unlock(&data->philo[i].mutex_time_last_eat);
