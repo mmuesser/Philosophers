@@ -9,7 +9,6 @@ INCLUDE = -I ./include/
 CC = gcc
 
 CFLAGS = -Werror -Wextra -Wall -g3
-# CFLAGS = -Werror -Wextra -Wall -fsanitize=thread
 
 RM = rm -rf
 
