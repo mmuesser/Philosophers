@@ -6,7 +6,7 @@
 /*   By: mmuesser <mmuesser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 15:28:41 by mmuesser          #+#    #+#             */
-/*   Updated: 2023/06/18 13:42:50 by mmuesser         ###   ########.fr       */
+/*   Updated: 2023/06/19 13:00:19 by mmuesser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	check_nb(char *av)
 
 	if (av[0] == '-')
 		return (1);
-	nb = atoi(av);
+	nb = ft_atoi(av);
 	i = ft_strlen(av) - 1;
 	while (i >= 0)
 	{

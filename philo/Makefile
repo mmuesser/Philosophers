@@ -6,7 +6,7 @@ OBJS = ${SRCS:.c=.o}
 
 INCLUDE = -I ./include/
 
-CC = gcc
+CC = cc
 
 CFLAGS = -Werror -Wextra -Wall -g3
 
